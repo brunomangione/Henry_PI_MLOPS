@@ -27,7 +27,7 @@ fastjsonschema==2.16.2
 fastparquet==0.8.1
 fonttools==4.38.0
 fqdn==1.5.1
-fsspec==2023.10.0
+fsspec==0.8.7
 h11==0.14.0
 httptools==0.6.1
 idna==3.4
