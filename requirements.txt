@@ -56,7 +56,7 @@ MarkupSafe==2.1.1
 matplotlib==3.5.3
 matplotlib-inline==0.1.6
 mistune==2.0.4
-mysql-connector-python==8.1.0
+mysql-connector-python==8.0.33
 nbclassic==0.4.8
 nbclient==0.7.2
 nbconvert==7.2.7
