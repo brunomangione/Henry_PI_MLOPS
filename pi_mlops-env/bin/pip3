@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/Users/brunomangione/Library/CloudStorage/GoogleDrive-brunomangione@gmail.com/My Drive/PROGRAMACION/Henry/Data Science/PI MLOPS/pi_mlops-env/bin/python3" "$0" "$@"
+'''exec' "/Users/brunomangione/Library/CloudStorage/GoogleDrive-brunomangione@gmail.com/My Drive/PROGRAMACION/Henry/Data Science/PI MLOPS/pi_mlops-env/bin/python" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re
