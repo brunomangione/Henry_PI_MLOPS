@@ -53,7 +53,7 @@ jupyterlab-widgets==3.0.5
 kiwisolver==1.4.4
 kneed==0.8.5
 MarkupSafe==2.1.1
-matplotlib==3.7.1
+matplotlib==3.5.3
 matplotlib-inline==0.1.6
 mistune==2.0.4
 mysql-connector-python==8.1.0
