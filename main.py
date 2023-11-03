@@ -126,8 +126,8 @@ def sentiment_analysis(year):
         return {"Negative" : negativo, "Neutral" : neutral, "Positive" : positivo}
 
 # Creamos la funcion para fast api
-@app.get("/senent_analysis")
-async def get_sentint_analysis(year: int):
+@app.get("/sentiment_analysis/{year}")
+async def get_sentiment_analysis(year: int):
     resultado = sentiment_analysis(year)    
     return resultado
 
@@ -166,4 +166,5 @@ def recomendacion_juego(id_producto):
 @app.get("/recommend/{item_id}")
 def get_recommendations(item_id: float):
     recommendations = recomendacion_juego(item_id)
-    return {"item_id": item_id, "recommendations": recommendations}
+    game_name = id_to_name(item_id, "Juego no encontrado")
+    return {"item_id": item_id, "game_name": game_name, "recommendations": recommendations}
