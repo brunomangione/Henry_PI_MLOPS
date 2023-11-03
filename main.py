@@ -7,7 +7,7 @@ app = FastAPI()
 # PRIMER FUNCION 
 
 #Traemos el archivo parquet que creamos   
-data = pd.read_parquet('genres.parquet')   
+data = pd.read_parquet('./genres.parquet')   
 
 # Traemos la funcion creada 
 def playTimeGenre(genres):
