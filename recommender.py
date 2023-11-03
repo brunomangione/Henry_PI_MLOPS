@@ -29,3 +29,15 @@ def initialize_recommendation_system(recommend):
     cosine_sim = np.dot(tfidf_matrix, tfidf_matrix.T)
     
     return item_to_idx, cosine_sim
+
+def get_recommendations(item_name, item_to_idx, cosine_sim, recommend):
+    idx = item_to_idx.get(item_name, -1)
+    if idx != -1:
+        sim_scores = list(enumerate(cosine_sim[idx]))
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+        sim_scores = sim_scores[1:6]  # Recomendar los 5 ítems más similares (excluyendo el propio ítem)
+        game_indices = [i[0] for i in sim_scores]
+        return recommend['item_name'].iloc[game_indices].tolist()
+    else:
+        return []
+        
