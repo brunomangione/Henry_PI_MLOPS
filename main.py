@@ -138,20 +138,15 @@ from sklearn.decomposition import TruncatedSVD
 recommend = pd.read_parquet('recommend.parquet')
 # Inicializar el vectorizador TF-IDF
 tfidf_vectorizer = TfidfVectorizer()
-
 # Aplicar el vectorizador a la columna 'review'
 tfidf_matrix = tfidf_vectorizer.fit_transform(recommend['review'])
-
 # Inicializar TruncatedSVD con el número deseado de componentes
-n_components = 1000  # Ajusta este valor según tus necesidades
+n_components = 100  # Ajusta este valor según tus necesidades
 svd = TruncatedSVD(n_components=n_components)
-
 # Aplicar TruncatedSVD a la matriz TF-IDF
 tfidf_matrix_svd = svd.fit_transform(tfidf_matrix)
-
 # Crear un diccionario que mapea los IDs de los juegos a sus nombres
 id_to_name = recommend.set_index('item_id')['item_name'].to_dict()
-
 
 def recomendacion_juego(id_producto):
     idx = recommend[recommend['item_id'] == id_producto].index[0]
