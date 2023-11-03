@@ -132,7 +132,6 @@ async def get_sentint_analysis(year: int):
     return resultado
 
 # SISTEMA RECOMENDACION 
-
 from recommender import load_recommendation_data, initialize_recommendation_system, get_recommendations
 # Cargar datos y sistema de recomendación al iniciar la aplicación
 recommend = load_recommendation_data('recomendacion.parquet')
