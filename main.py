@@ -132,12 +132,43 @@ async def get_sentint_analysis(year: int):
     return resultado
 
 # SISTEMA RECOMENDACION 
-from recommender import load_recommendation_data, initialize_recommendation_system, get_recommendations
-# Cargar datos y sistema de recomendación al iniciar la aplicación
-recommend = load_recommendation_data('recomendacion.parquet')
-item_to_idx, cosine_sim = initialize_recommendation_system(recommend)
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD
+recommend = pd.read_parquet('recommend.parquet')
+# Inicializar el vectorizador TF-IDF
+tfidf_vectorizer = TfidfVectorizer()
 
-@app.get("/recommendations/{item_name}")
-def get_game_recommendations(item_name: str):
-    recommendations = get_recommendations(item_name, item_to_idx, cosine_sim, recommend)
-    return {"item_name": item_name, "recommendations": recommendations}
+# Aplicar el vectorizador a la columna 'review'
+tfidf_matrix = tfidf_vectorizer.fit_transform(recommend['review'])
+
+# Inicializar TruncatedSVD con el número deseado de componentes
+n_components = 1000  # Ajusta este valor según tus necesidades
+svd = TruncatedSVD(n_components=n_components)
+
+# Aplicar TruncatedSVD a la matriz TF-IDF
+tfidf_matrix_svd = svd.fit_transform(tfidf_matrix)
+
+# Crear un diccionario que mapea los IDs de los juegos a sus nombres
+id_to_name = recommend.set_index('item_id')['item_name'].to_dict()
+
+
+def recomendacion_juego(id_producto):
+    idx = recommend[recommend['item_id'] == id_producto].index[0]
+
+    # Calcular la similitud de coseno entre los juegos basándose en la matriz TF-IDF reducida
+    sim_scores = cosine_similarity([tfidf_matrix_svd[idx]], tfidf_matrix_svd)
+    
+    # Obtener los índices de los juegos más similares
+    sim_scores = sim_scores[0]  # Desempaquetar la matriz
+    similar_games_indices = sim_scores.argsort()[::-1][1:6]  # Excluyendo el propio juego
+
+    # Recuperar los nombres de los juegos recomendados utilizando el mapeo
+    recommended_games = [id_to_name[recommend['item_id'].iloc[i]] for i in similar_games_indices]
+
+    return recommended_games
+
+@app.get("/recommend/{item_id}")
+def get_recommendations(item_id: float):
+    recommendations = recomendacion_juego(item_id)
+    return {"item_id": item_id, "recommendations": recommendations}
