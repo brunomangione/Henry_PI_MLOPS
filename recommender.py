@@ -36,7 +36,7 @@ def get_recommendations(item_name, item_to_idx, cosine_sim, recommend):
     if idx != -1:
         sim_scores = list(enumerate(cosine_sim[idx]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1:6]  # Recomendar los 5 ítems más similares (excluyendo el propio ítem)
+        sim_scores = sim_scores[1:4]  # Recomendar los 5 ítems más similares (excluyendo el propio ítem)
         game_indices = [i[0] for i in sim_scores]
         return recommend['item_name'].iloc[game_indices].tolist()
     else:
