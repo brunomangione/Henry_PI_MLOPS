@@ -7,7 +7,7 @@ app = FastAPI()
 # PRIMER FUNCION 
 
 #Traemos el archivo parquet que creamos   
-data = pd.read_parquet('./genres.parquet')   
+data = pd.read_parquet('genres.parquet')   
 
 # Traemos la funcion creada 
 def playTimeGenre(genres):
@@ -53,3 +53,81 @@ async def user_for_genre(genero: str):
     resultado = userForGenre(genero)
     return resultado
     
+#TERCER FUNCION
+
+# Traemos el archivo parquet para la funcion
+reviews = pd.read_parquet('userrecomend.parquet')
+
+# Traemos la funcion creada
+def top_recommended_games(year):
+    
+    filtro_df = reviews[(reviews['year'] == year) & (reviews['recommend'] == True)]  
+    if filtro_df.empty:
+        return f"El año {year} no se encuentra en los registros."
+    else:
+        game_recommendations = filtro_df.groupby('item_name')['user_id'].count().reset_index()
+        top_games = game_recommendations.sort_values(by='user_id', ascending=False)
+        top_3_games = top_games.head(3)
+    
+    result = {"Puesto 1": top_3_games.iloc[0]['item_name']}, {"Puesto 2": top_3_games.iloc[1]['item_name']}, {"Puesto 3": top_3_games.iloc[2]['item_name']}
+    
+    return result
+
+# Creamos la funcion para FastApi
+@app.get("/top_games_recommended/{year}")
+async def top_recommended(year: int):
+    resultado = top_recommended_games(year)
+    return resultado
+
+
+
+# CUARTA FUNCION
+
+# Traemos la funcion creada
+def top_least_recommended_games(year):
+    
+    filtro_df = reviews[(reviews['year'] == year) & (reviews['recommend'] == False)]  
+    if filtro_df.empty:
+        return f"El año {year} no se encuentra en los registros."
+    else:
+        game_recommendations = filtro_df.groupby('item_name')['user_id'].count().reset_index()
+    
+        top_games = game_recommendations.sort_values(by='user_id', ascending=True)  
+    
+        top_3_games = top_games.head(3)
+    
+    result = [{"Puesto 1": top_3_games.iloc[0]['item_name']}, {"Puesto 2": top_3_games.iloc[1]['item_name']}, {"Puesto 3": top_3_games.iloc[2]['item_name']}]
+    
+    return result
+
+# Creamos la funcion para FastApi
+@app.get("/least_games_recommended/{year}")
+async def least_recommended(year: int):
+    resultado = top_least_recommended_games(year)
+    return resultado
+
+
+# QUINTA FUNCION
+
+# Traemos el df de sentimiento
+df_sentiment = pd.read_parquet('sentiment.parquet')
+
+# Traemos la funcion para realizar el analisis de sentimiento
+def sentiment_analysis(year):
+    filtro_sentiment = df_sentiment[df_sentiment['year_x'] == year]
+    
+    if filtro_sentiment.empty:
+        return f"El año {year} no se encuentra en los registros"
+    else:
+        negativo = df_sentiment.loc[df_sentiment.year_x == year, "total_negativos"].item()
+        neutral = df_sentiment.loc[df_sentiment.year_x == year, "total_neutrales"].item()
+        positivo = df_sentiment.loc[df_sentiment.year_x == year, "total_positivos"].item()
+  
+        return {"Negative" : negativo, "Neutral" : neutral, "Positive" : positivo}
+
+# Creamos la funcion para fast api
+@app.get("/senent_analysis")
+async def get_sentint_analysis(year: int):
+    resultado = sentiment_analysis(year)    
+    return resultado
+
