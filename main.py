@@ -134,12 +134,11 @@ async def get_sentint_analysis(year: int):
 # SISTEMA RECOMENDACION 
 
 from recommender import load_recommendation_data, initialize_recommendation_system, get_recommendations
-
 # Cargar datos y sistema de recomendación al iniciar la aplicación
 recommend = load_recommendation_data('recomendacion.parquet')
-cosine_sim = initialize_recommendation_system(recommend)
+item_to_idx, cosine_sim = initialize_recommendation_system(recommend)
 
 @app.get("/recommendations/{item_name}")
 def get_game_recommendations(item_name: str):
-    recommendations = get_recommendations(item_name, cosine_sim, recommend)
+    recommendations = get_recommendations(item_name, item_to_idx, cosine_sim, recommend)
     return {"item_name": item_name, "recommendations": recommendations}

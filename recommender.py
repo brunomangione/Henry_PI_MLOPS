@@ -1,26 +1,34 @@
 import pandas as pd
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
 
 def load_recommendation_data(data_file):
     recommend = pd.read_parquet(data_file)
     return recommend
 
 def initialize_recommendation_system(recommend):
-    tfidf_vectorizer = TfidfVectorizer()
-    tfidf_matrix = tfidf_vectorizer.fit_transform(recommend['review'])
-    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
-    return cosine_sim
+    corpus = recommend['review'].values
+    unique_items = recommend['item_name'].unique()
 
-def get_recommendations(item_name, cosine_sim, recommend):
-    idx_list = recommend.index[recommend['item_name'] == item_name].tolist()
+    # Crear un diccionario para mapear índices a nombres de juegos
+    item_to_idx = {item: idx for idx, item in enumerate(unique_items)}
+
+    # Crear una matriz TF-IDF manualmente
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    tfidf_vectorizer = TfidfVectorizer()
+    tfidf_matrix = tfidf_vectorizer.fit_transform(corpus)
+
+    # Calcular la similitud de coseno
+    cosine_sim = np.dot(tfidf_matrix, tfidf_matrix.T)
     
-    if idx_list:
-        idx = idx_list[0]
+    return item_to_idx, cosine_sim
+
+def get_recommendations(item_name, item_to_idx, cosine_sim, recommend):
+    idx = item_to_idx.get(item_name, -1)
+    if idx != -1:
         sim_scores = list(enumerate(cosine_sim[idx]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
         sim_scores = sim_scores[1:6]  # Recomendar los 5 ítems más similares (excluyendo el propio ítem)
         game_indices = [i[0] for i in sim_scores]
-        return recommend['item_name'].iloc[game_indices]
+        return recommend['item_name'].iloc[game_indices].tolist()
     else:
-        return [] 
+        return []
