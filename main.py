@@ -131,10 +131,13 @@ async def get_sentiment_analysis(year: int):
     resultado = sentiment_analysis(year)    
     return resultado
 
-# SISTEMA RECOMENDACION 
+# SISTEMA RECOMENDACION
+
+# Traemos las librerias que utilizamos 
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
+# Traemos el archivo del dataframe 
 recommend = pd.read_parquet('recommend.parquet')
 # Inicializar el vectorizador TF-IDF
 tfidf_vectorizer = TfidfVectorizer()
@@ -147,7 +150,7 @@ svd = TruncatedSVD(n_components=n_components)
 tfidf_matrix_svd = svd.fit_transform(tfidf_matrix)
 # Crear un diccionario que mapea los IDs de los juegos a sus nombres
 id_to_name = recommend.set_index('item_id')['item_name'].to_dict()
-
+# Creamos la funcion de recomendacion
 def recomendacion_juego(id_producto):
     idx = recommend[recommend['item_id'] == id_producto].index[0]
 
@@ -162,9 +165,8 @@ def recomendacion_juego(id_producto):
     recommended_games = [id_to_name[recommend['item_id'].iloc[i]] for i in similar_games_indices]
 
     return recommended_games
-
+# Creamos la funcion para FastApi
 @app.get("/recommend/{item_id}")
 def get_recommendations(item_id: float):
     recommendations = recomendacion_juego(item_id)
-    game_name = id_to_name(item_id, "Juego no encontrado")
-    return {"item_id": item_id, "game_name": game_name, "recommendations": recommendations}
+    return {"item_id": item_id, "recommendations": recommendations}

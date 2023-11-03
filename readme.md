@@ -106,6 +106,44 @@ Elegimos la alternativa que el modelo deberá tener una relación ítem-ítem, e
 
 def recomendacion_juego( id de producto ): Ingresando el id de producto, deberíamos recibir una lista con 5 juegos recomendados similares al ingresado.
 
+Para la realizacion del modelo utilizamos las librerias de pandas y sklearn, donde nos trajimos TfidfVectorizer, cosine_similarity y TruncatedSVD.
+
+Comenzamos cargando los dataframe de reviews y de items, donde hicimos un merge, eliminamos los archivos nulos y nos quedamos solamente con las culumnas de item_id, item_name y reviews. Ya con el dataframe listo, el sistema de recomendacion se construye utilizando los siguientes pasos:
+
+1. **Inicializar el vectorizador TF-IDF**: Inicializamos un vectorizador TF-IDF que se utilizará para convertir las reseñas de juegos en representaciones vectoriales.
+
+2. **Aplicar el vectorizador a la columna 'review'**: Aplicamos el vectorizador TF-IDF a la columna 'review' de nuestro conjunto de datos, lo que nos proporciona una matriz TF-IDF que representa la importancia de las palabras en cada reseña.
+
+3. **Inicializar TruncatedSVD con el número deseado de componentes**: Utilizamos TruncatedSVD (Singular Value Decomposition) para reducir la dimensionalidad de la matriz TF-IDF. Esto es útil para reducir la memoria necesaria y acelerar los cálculos.
+
+4. **Aplicar TruncatedSVD a la matriz TF-IDF**: Aplicamos TruncatedSVD a la matriz TF-IDF, lo que nos proporciona una representación de baja dimensionalidad de las reseñas de los juegos.
+
+5. **Crear un diccionario que mapea los IDs de los juegos a sus nombres**: Creamos un diccionario que mapea los IDs de los juegos a sus nombres para poder mostrar los nombres de los juegos en las recomendaciones.
+
+6. **Función de recomendación**: La función `recomendacion_juego(id_producto)` toma un ID de producto y calcula la similitud de coseno entre ese juego y todos los demás juegos en función de la matriz TF-IDF reducida. Luego, se devuelven los nombres de los juegos más similares como recomendaciones.
+
+Una vez creada la funcion y probada en el libro de python, lo que hacemos es exportar el dataframe que usamos en la funcion a un formato tipo parquet para luego utilizarlo en la API. 
+
+
+## Requisitos
+Los requisitos y librerias necesarias que deben estar instaladas:
+
+- Pandas
+- Scikit-learn
+- FastApi
+- FastParquet
+- Numpy
+- Nltk
+- Uvicorn
+
+
+## Autor
+# Bruno Mangione
+Contacto: 
+    Mail: brunomangione@gmail.com
+    Github: brunomangione
+    
+
 
 
 
