@@ -6,7 +6,7 @@ from sklearn.preprocessing import normalize
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 def load_recommendation_data(data_file):
-    recommend = pd.read_parquet(data_file)
+    recommend = pd.read_parquet(data_file, nrows=5000)
     return recommend
 
 def initialize_recommendation_system(recommend):
